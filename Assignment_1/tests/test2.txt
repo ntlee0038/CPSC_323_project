@@ -1,0 +1,7 @@
+INTEGER count;
+real price;
+count = 25;
+price = 19.99;
+if (count >= 10)
+    count = count + 1;
+fi

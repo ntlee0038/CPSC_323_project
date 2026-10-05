@@ -39,30 +39,29 @@ bool isIdentifier(const string& lexeme)
 
 bool isKeyword(const string& lexeme)
 {
-    string keywords[] = 
+    string lowerLexeme = lexeme;
+
+    for (char& ch : lowerLexeme)
     {
-        "integer",
-        "boolean",
-        "real",
-        "if",
-        "else",
-        "fi",
-        "while",
-        "return",
-        "get",
-        "put",
-        "function",
-        "true",
-        "false",
+        ch = tolower(ch);
+    }
+
+    string keywords[] =
+    {
+        "integer", "boolean", "real",
+        "if", "else", "fi", "while",
+        "return", "get", "put",
+        "function", "true", "false"
     };
 
     for (const string& keyword : keywords)
     {
-        if (lexeme == keyword)
+        if (lowerLexeme == keyword)
         {
             return true;
         }
     }
+
     return false;
 }
 bool isInteger(const string& lexeme)
@@ -195,128 +194,138 @@ Token lexer(ifstream& inputFile)
     Token result;
     char ch;
 
-    //skips whitespace
+    // Skip whitespace and comments
     while (inputFile.get(ch))
     {
-        if (!isspace(ch))
+        if (isspace(ch))
         {
-            break;
+            continue;
         }
+
+        // Comment starts with ! unless it is !=
+        if (ch == '!' && inputFile.peek() != '=')
+        {
+            while (inputFile.get(ch) && ch != '!')
+            {
+                // Ignore comment contents
+            }
+
+            continue;
+        }
+
+        break;
     }
 
-    if(inputFile.eof())
+    // End of file
+    if (!inputFile)
     {
         result.token = "EOF";
         result.lexeme = "";
         return result;
     }
 
-    if(ch == '!')
-    {
-        while (inputFile.get(ch) && ch != '!')
-        {
-            // ignores evrything inside the comments
-        }
-        return lexer(inputFile);
-    }
-
+    // Identifier or keyword
     if (isalpha(ch))
     {
         string lexeme;
         lexeme += ch;
 
-        while(inputFile.get(ch))
+        while (inputFile.peek() != EOF &&
+               (isalnum(inputFile.peek()) || inputFile.peek() == '_'))
         {
-            if (isalnum(ch) || ch == '_')
-            {
-                lexeme += ch;
-            }
-            else
-            {
-                inputFile.unget();
-                break;
-            }
+            lexeme += static_cast<char>(inputFile.get());
         }
 
         if (isKeyword(lexeme))
         {
             result.token = "keyword";
         }
+        else if (isIdentifier(lexeme))
+        {
+            result.token = "identifier";
+        }
         else
         {
-            result.token="identifier";
+            result.token = "unknown";
         }
 
         result.lexeme = lexeme;
         return result;
     }
 
-    if (isdigit(ch)|| ch == '.')
+    // Integer or real
+    if (isdigit(ch) || ch == '.')
     {
         string lexeme;
         lexeme += ch;
 
         bool hasDecimal = (ch == '.');
 
-        while (inputFile.get(ch))
+        while (inputFile.peek() != EOF)
         {
-            if (isdigit(ch))
+            char next = static_cast<char>(inputFile.peek());
+
+            if (isdigit(next))
             {
-                lexeme += ch;
+                lexeme += static_cast<char>(inputFile.get());
             }
-            else if (ch == '.' && !hasDecimal)
+            else if (next == '.' && !hasDecimal)
             {
-                lexeme += ch;
+                lexeme += static_cast<char>(inputFile.get());
                 hasDecimal = true;
             }
             else
             {
-                inputFile.unget();
                 break;
-            } 
+            }
         }
+
         if (isReal(lexeme))
-            {
-                result.token = "real";   
-            }
-            else if(isInteger(lexeme))
-            {
-                result.token = "integer";
-            }
-            else 
-            {
-                result.token = "unknown";
-            }
-            result.lexeme = lexeme;
-            return result;
+        {
+            result.token = "real";
+        }
+        else if (isInteger(lexeme))
+        {
+            result.token = "integer";
+        }
+        else
+        {
+            result.token = "unknown";
+        }
+
+        result.lexeme = lexeme;
+        return result;
     }
+
+    // Separator
     if (isSeparator(ch))
     {
         result.token = "separator";
         result.lexeme = string(1, ch);
         return result;
     }
+
+    // Operator
     string op;
     op += ch;
 
     if (ch == '=' || ch == '<' || ch == '>' || ch == '!')
     {
-        char next;
-        if (inputFile.get(next))
+        if (inputFile.peek() != EOF)
         {
+            char next = static_cast<char>(inputFile.peek());
             string twoCharOp = op + next;
 
             if (isOperator(twoCharOp))
             {
+                inputFile.get();
                 result.token = "operator";
                 result.lexeme = twoCharOp;
                 return result;
             }
-            else{
-                inputFile.unget();
-            }
         }
     }
+
     if (isOperator(op))
     {
         result.token = "operator";
@@ -324,8 +333,9 @@ Token lexer(ifstream& inputFile)
         return result;
     }
 
+    // Anything else is unknown
     result.token = "unknown";
-    result.lexeme = string(1,ch);
+    result.lexeme = string(1, ch);
 
     return result;
-    }
+}
