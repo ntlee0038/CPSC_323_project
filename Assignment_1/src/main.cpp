@@ -1,4 +1,4 @@
-#include “lexer.h”
+#include "lexer.h"
 #include <iostream>
 #include <fstream>
 #include <iomanip>
@@ -7,34 +7,34 @@ using namespace std;
 
 int main()
 {
-   ifstream inputFile(“../tests/test1.txt”);
+   ifstream inputFile("../tests/test1.txt");
 
-   ofstream outputFile(“../output/output1.txt”);
+   ofstream outputFile("../output/output1.txt");
 
    if (inputFile.is_open())
    {
-    cout << “Error: could not open input file.” << endl;
+    cout << "Error: could not open input file." << endl;
     return 1;
    }
 
 if (!outputFile.is_open())
 {
-    cout << “Error: could not open output file.” << endl;
+    cout << "Error: could not open output file." << endl;
     return 1;
 }
 
 outputFile << left
-<< setw(15) << “Token”
-<< “Lexeme” << endl;
+<< setw(15) << "Token"
+<< "Lexeme" << endl;
 
 
-outputFile << “ -------------- “ << endl;
+outputFile << " -------------- " << endl;
 
 while (true)
 {
     Token currentToken = lexer(inputFile);
 
-    if (currentToken.token == “EOF”)
+    if (currentToken.token == "EOF")
     {
         break;
     }
@@ -47,8 +47,8 @@ while (true)
 inputFile.close();
 outputFile.close();
 
-cout << “lexical analysis complete. “ << endl;
-cout << “results written to output1.txt” << endl;
+cout << "lexical analysis complete. " << endl;
+cout << "results written to output1.txt" << endl;
 
 return 0;
 }
