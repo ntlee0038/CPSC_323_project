@@ -1,21 +1,54 @@
-#include "lexer.h"
+#include “lexer.h”
 #include <iostream>
+#include <fstream>
+#include <iomanip>
 
 using namespace std;
 
 int main()
 {
-    cout << "identfier test:" << endl;
-    cout <<isIdentifier("fahr") << endl;
+   ifstream inputFile(“../tests/test1.txt”);
 
-    cout << "Integer test:" << endl;
-    cout <<isIdentifier("fahr") << endl;
+   ofstream outputFile(“../output/output1.txt”);
 
-    cout << "real test:" << endl;
-    cout << isReal("23.00") << endl;
+   if (inputFile.is_open())
+   {
+    cout << “Error: could not open input file.” << endl;
+    return 1;
+   }
 
-    cout << "keyboard test:" << endl;
-    cout << isKeyword("while") << endl;
+if (!outputFile.is_open())
+{
+    cout << “Error: could not open output file.” << endl;
+    return 1;
+}
 
-    return 0;
+outputFile << left
+<< setw(15) << “Token”
+<< “Lexeme” << endl;
+
+
+outputFile << “ -------------- “ << endl;
+
+while (true)
+{
+    Token currentToken = lexer(inputFile);
+
+    if (currentToken.token == “EOF”)
+    {
+        break;
+    }
+
+    outputFile << left
+    << setw(15) << currentToken.token
+    << currentToken.lexeme << endl;
+}
+
+inputFile.close();
+outputFile.close();
+
+cout << “lexical analysis complete. “ << endl;
+cout << “results written to output1.txt” << endl;
+
+return 0;
 }
