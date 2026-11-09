@@ -1,13 +1,16 @@
+//header guards
 #ifndef PARSER_H
 #define PARSER_H
 
 #include "lexer.h"
-#include <cstddef>
+#include <cstddef> //provides std::size_t for sizes and positions
 #include <fstream>
-#include <ostream>
+#include <ostream> //lets us write output to files or terminal
 #include <string>
 #include <vector>
 
+
+//parser class below
 class Parser {
     public:
         Parser(std::ifstream& input, std::ostream& output, bool showRules = true);
@@ -22,6 +25,9 @@ class Parser {
         std:: vector<std::size_t> newlineOffsets;
         std::size_t currentLine =1;
 
+
+        //helper functions 
+
         void advance();
         void match(const std::string& lexeme);
         void matchType(const std::string& type);
@@ -33,6 +39,8 @@ class Parser {
         bool startsExpression() const;
         bool startsQualifier() const;
 
+
+        // Grammaer functions
         void rat26G();
         void optFunctionDefinitions();
         void functionDefinitions();
