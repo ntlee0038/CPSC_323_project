@@ -33,5 +33,38 @@ class Parser {
         bool startsExpression() const;
         bool startsQualifier() const;
 
+        void rat26G();
+        void optFunctionDefinitions();
+        void functionDefinitions();
+        void function();
+        void optParameterList();
+        void parameterList();
+        void parameter();
+        void qualifier();
+        void body();
+        void optDeclarationList();
+        void declarationList();
+        void declaration();
+        void ids();
+        void statementList();
+        void statement();
+        void compound();
+        void assign();
+        void ifStatement();
+        void returnStatement();
+        void printStatement();
+        void scanStatement();
+        void whileStatement();
+        void condition();
+        void relop();
+        void expression();
+        void expressionPrime();
+        void term();
+        void termPrime();
+        void factor();
+        void primary();
 
-}
+
+};
+
+#endif
