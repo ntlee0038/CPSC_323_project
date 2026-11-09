@@ -22,7 +22,7 @@ input.clear();
 input.seekg(0, std::ios::beg);
 advance();
 }
-
+// gets the net token from lexer. it will give the line nnumber and writes the token to output
 void Parser::advance() {
     current = lexer(input);
     const std::streampos pos = input.tellg();
@@ -45,12 +45,12 @@ void Parser::advance() {
            << '\n';
 }
 }
-
+//checks the current lexeme matches
 bool Parser::is(const std::string& value) const {
     return current.lexeme == value;
 }
 
-
+//checks whether the tokens match
 bool Parser:: isType(const std::string& type) const {
     return current.token == type;
 }
@@ -183,7 +183,7 @@ void Parser::compound() {
     rule("<Compound> -> { <Statement List> }");
     match("{"); statementList(); match("}");
 }
-
+//parses an assignment statement
 void Parser::assign() {
     rule("<Assign> -> <Identifier> = <Expression> ;");
     matchType("identifier"); match("="); expression(); match(";");
@@ -221,7 +221,7 @@ void Parser::scanStatement() {
     rule("<Scan> -> get ( <IDs> ) ;");
     match("get"); match("("); ids(); match(")"); match(";");
 }
-
+// parses a while loop bu checking the conditions then parses the statement inside the loop
 void Parser::whileStatement() {
     rule("<While> -> while ( <Condition> ) <Statement>");
     match("while"); match("("); condition(); match(")"); statement();
