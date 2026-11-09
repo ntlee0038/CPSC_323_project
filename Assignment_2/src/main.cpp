@@ -1,10 +1,10 @@
 #include "parser.h"
 #include <fstream>
 #include <iostream>
-#include <excepction>
+#include <exception>
 
 int main( int argc, char** argv) {
-    if (arg !=3) { std::cerr<< "Usage: ./parser <input> <output>\n"; return 1; }
+    if (argc !=3) { std::cerr<< "Usage: ./parser <input> <output>\n"; return 1; }
     std::ifstream input(argv[1]);
     std::ofstream output(argv[2]);
     if (!input || !output) { std::cerr <<"Could not open input or output file.\n"; return 1;}
