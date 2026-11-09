@@ -6,7 +6,7 @@
 
 
 
-Parser::Parser(std::ifsteam& inputFile, std::ostream& outputFile, boolTrace)
+Parser::Parser(std::ifstream& inputFile, std::ostream& outputFile, boolTrace)
 : input(inputFile), output(outputFile), showRules(trace) {
      // Keep a copy of the source for accurate line numbers, without changing
     input.clear();
