@@ -1,52 +1,14 @@
-#include "lexer.h"
-#include <iostream>
+#include "parser.h"
 #include <fstream>
-#include <iomanip>
+#include <iostream>
+#include <excepction>
 
-using namespace std;
-
-int main()
-{
-    ifstream inputFile("../tests/test3.txt");
-    ofstream outputFile("../output/output3.txt");
-
-    if (!inputFile.is_open())
-    {
-        cout << "Error: could not open input file." << endl;
-        return 1;
-    }
-
-    if (!outputFile.is_open())
-    {
-        cout << "Error: could not open output file." << endl;
-        return 1;
-    }
-
-    outputFile << left
-               << setw(15) << "Token"
-               << "Lexeme" << endl;
-
-    outputFile << " -------------------- " << endl;
-
-    while (true)
-    {
-        Token currentToken = lexer(inputFile);
-
-        if (currentToken.token == "EOF")
-        {
-            break;
-        }
-
-        outputFile << left
-                   << setw(15) << currentToken.token
-                   << currentToken.lexeme << endl;
-    }
-
-    inputFile.close();
-    outputFile.close();
-
-    cout << "lexical analysis complete. " << endl;
-    cout << "results written to output3.txt" << endl;
-
-    return 0;
+int main( int argc, char** argv) {
+    if (arg !=3) { std::cerr<< "Usage: ./parser <input> <output>\n"; return 1; }
+    std::ifstream input(argv[1]);
+    std::ofstream output(argv[2]);
+    if (!input || !output) { std::cerr <<"Could not open input or output file.\n"; return 1;}
+    try {Parser parser(input, output); parser.parse(); }
+    catch (const std::exception& e) {std::cerr <<e.what() << '\n'; return 1; }
+    std::cout <<"Parsing successful.\n"
 }
