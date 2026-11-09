@@ -36,3 +36,26 @@ void Parser::advance() {
     if (current.token == "unknown") error("a recognized Rat26F token");
 }
 
+bool Parser:: is(const std::string& value) const {
+    return current.token == value;
+}
+
+
+bool Parser:: isType(const std::string& type) const {
+    return current.token == type;
+}
+
+void Parser::rule(const std::string& production) {
+    if (showRules) output << production << '\n';
+}
+
+[[noreturn]] void Parser::error(const std::string& expected) const {
+    const std::string found = isType("EOF") ? "end of the file" : current.lexeme;
+    const std::string message = "Syntax Eerror at line " +
+    ", found '" + found + "' (token: " + current.token + ")";
+    output << message << '/n';
+    throw std::runtime_error(message);
+}
+
+
+
