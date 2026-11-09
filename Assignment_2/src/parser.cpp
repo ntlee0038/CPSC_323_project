@@ -57,5 +57,47 @@ void Parser::rule(const std::string& production) {
     throw std::runtime_error(message);
 }
 
+void Parser::match(const std::string& value) {
+    if (!is(value)) error("'" + value + "'");
+    advance();
+}
 
+void Parser::matchType(const std::string& type) {
+    if (!isType(type)) error("token type " + type);
+    advance();
 
+bool Parser::startsQualifier() const {
+    return is("integer") || is("boolean") || is("real");
+}
+
+bool Parser::startsStatement() const {
+    return isType("identifier") || is("{") || is ("if") || is("return") || is("put") || is("get") || is("while");
+}
+
+bool Parser::startsExpression() const {
+    return isType("identifier") || isType("integer") || isType("real") || is("(") || is("-") || is("true") || is("false");
+}
+
+void Parser::parse() {
+    rat26F();
+    if (!isType("EOF")) error("end of file");
+    output << "syntax analysis completed successfully./n";
+}
+
+void Parser::rat26F() {
+    rule("<Rat26F -. Function Definitions -> <Function Definitions>'");
+    optFunctionDefinitions();
+    match("@")
+    optDeclarationList();
+    match("@");
+    statementList();
+}
+
+void Parser::optFunctionDefinitions() {
+    if (is("function")) {
+        rule("<Opt Function Definitions> -> <Function Definitions>");
+        functionDefinitions();
+    } else {
+        rule("<Opt Function Definitions> -> epsilon");
+    }
+}
