@@ -35,10 +35,19 @@ void Parser::advance() {
     - newlineOffsets.begin());
 
     if (current.token == "unknown") error("a recognized Rat26F token");
+
+
+//checks the ine number and checks for unknown tokens
+// will print each token as it is retrieved from lexer. 
+    if (!isType("EOF")) {
+    output << "Token: " << current.token
+           << " Lexeme: " << current.lexeme
+           << '\n';
+}
 }
 
-bool Parser:: is(const std::string& value) const {
-    return current.token == value;
+bool Parser::is(const std::string& value) const {
+    return current.lexeme == value;
 }
 
 
@@ -91,11 +100,11 @@ bool Parser::startsExpression() const {
 void Parser::parse() {
     rat26F();
     if (!isType("EOF")) error("end of file");
-    output << "syntax analysis completed successfully./n";
+    output << "syntax analysis completed successfully.\n";
 }
 
 void Parser::rat26F() {
-    rule("<Rat26F -. Function Definitions -> <Function Definitions>'");
+    rule("<Rat26F> -> <Opt Function Definitions> @ <Opt Declaration List> @ <Statement List>");
     optFunctionDefinitions();
     match("@");
     optDeclarationList();
@@ -140,24 +149,34 @@ void Parser::parameter() {
     qualifier();
 }
 
-void Parser::qualifier() {
-    if (!startsQualifier()) error(" 'integer', 'booolean', or 'real' "));
-    rule("<Qualifier> -> " + current.lexeme);
-    advance();
-}
-
-
-     else if (is("return")) {
-        rule("<Statement> -> <Return>"); returnStatement();
+void Parser::statement() {
+    if (isType("identifier")) {
+        rule("<Statement> -> <Assign>");
+        assign();
+    } else if (is("{")) {
+        rule("<Statement> -> <Compound>");
+        compound();
+    } else if (is("if")) {
+        rule("<Statement> -> <If>");
+        ifStatement();
+    } else if (is("return")) {
+        rule("<Statement> -> <Return>");
+        returnStatement();
     } else if (is("put")) {
-        rule("<Statement> -> <Print>"); printStatement();
+        rule("<Statement> -> <Print>");
+        printStatement();
     } else if (is("get")) {
-        rule("<Statement> -> <Scan>"); scanStatement();
+        rule("<Statement> -> <Scan>");
+        scanStatement();
     } else if (is("while")) {
-        rule("<Statement> -> <While>"); whileStatement();
+        rule("<Statement> -> <While>");
+        whileStatement();
     } else {
         error("a statement");
     }
+}
+
+
 
 
 void Parser::compound() {
@@ -286,3 +305,85 @@ void Parser::primary() {
         error("an identifier, integer, real, boolean, or '('");
     }
 }
+
+void Parser::qualifier() {
+    if (!startsQualifier()) {
+        error("'integer', 'boolean', or 'real'");
+    }
+
+    rule("<Qualifier> -> " + current.lexeme);
+    advance();
+}
+
+void Parser::ids() {
+    rule("<IDs> -> <Identifier> <IDs Prime>");
+    matchType("identifier");
+
+    while (is(",")) {
+        rule("<IDs Prime> -> , <Identifier> <IDs Prime>");
+        match(",");
+        matchType("identifier");
+    }
+
+    rule("<IDs Prime> -> epsilon");
+}
+
+void Parser::statementList() {
+    if (!startsStatement()) {
+        error("a statement");
+    }
+
+    rule("<Statement List> -> <Statement> <Statement List Prime>");
+    statement();
+
+    while (startsStatement()) {
+        rule("<Statement List Prime> -> <Statement> <Statement List Prime>");
+        statement();
+    }
+
+    rule("<Statement List Prime> -> epsilon");
+}
+
+void Parser::optParameterList() {
+    if (isType("identifier")) {
+        rule("<Opt Parameter List> -> <Parameter List>");
+        parameterList();
+    } else {
+        rule("<Opt Parameter List> -> epsilon");
+    }
+}
+
+void Parser::optDeclarationList() {
+    if (startsQualifier()) {
+        rule("<Opt Declaration List> -> <Declaration List>");
+        declarationList();
+    } else {
+        rule("<Opt Declaration List> -> epsilon");
+    }
+}
+
+void Parser::body() {
+    rule("<Body> -> { <Statement List> }");
+    match("{");
+    statementList();
+    match("}");
+}
+
+void Parser::declarationList() {
+    rule("<Declaration List> -> <Declaration> ;");
+    declaration();
+    match(";");
+
+    while (startsQualifier()) {
+        rule("<Declaration List> -> <Declaration> ; <Declaration List>");
+        declaration();
+        match(";");
+    }
+}
+
+void Parser::declaration() {
+    rule("<Declaration> -> <Qualifier> <IDs>");
+    qualifier();
+    ids();
+}
+
