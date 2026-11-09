@@ -1,0 +1,7 @@
+@
+integer a;
+@
+a = 10;
+if (a > 5)
+    put(a);
+fi

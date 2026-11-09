@@ -1,0 +1,9 @@
+function add(a integer, b integer)
+{
+    return a + b;
+}
+@
+integer result;
+@
+result = 5;
+put(result);

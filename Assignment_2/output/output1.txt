@@ -1,0 +1,49 @@
+Token: separator Lexeme: @
+<Rat26F> -> <Opt Function Definitions> @ <Opt Declaration List> @ <Statement List>
+<Opt Function Definitions> -> epsilon
+Token: keyword Lexeme: integer
+<Opt Declaration List> -> <Declaration List>
+<Declaration List> -> <Declaration> ;
+<Declaration> -> <Qualifier> <IDs>
+<Qualifier> -> integer
+Token: identifier Lexeme: a
+<IDs> -> <Identifier> <IDs Prime>
+Token: separator Lexeme: ;
+<IDs Prime> -> epsilon
+Token: separator Lexeme: @
+Token: identifier Lexeme: a
+<Statement List> -> <Statement> <Statement List Prime>
+<Statement> -> <Assign>
+<Assign> -> <Identifier> = <Expression> ;
+Token: operator Lexeme: =
+Token: integer Lexeme: 5
+<Expression> -> <Term> <Expression Prime>
+<Term> -> <Factor> <Term Prime>
+<Factor> -> <Primary>
+<Primary> -> <Integer>
+Token: operator Lexeme: +
+<Term Prime> -> epsilon
+<Expression Prime> -> + <Term> <Expression Prime>
+Token: integer Lexeme: 3
+<Term> -> <Factor> <Term Prime>
+<Factor> -> <Primary>
+<Primary> -> <Integer>
+Token: separator Lexeme: ;
+<Term Prime> -> epsilon
+<Expression Prime> -> epsilon
+Token: keyword Lexeme: put
+<Statement List Prime> -> <Statement> <Statement List Prime>
+<Statement> -> <Print>
+<Print> -> put ( <Expression> ) ;
+Token: separator Lexeme: (
+Token: identifier Lexeme: a
+<Expression> -> <Term> <Expression Prime>
+<Term> -> <Factor> <Term Prime>
+<Factor> -> <Primary>
+Token: separator Lexeme: )
+<Primary> -> <Identifier>
+<Term Prime> -> epsilon
+<Expression Prime> -> epsilon
+Token: separator Lexeme: ;
+<Statement List Prime> -> epsilon
+syntax analysis completed successfully.

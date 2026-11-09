@@ -1,0 +1,5 @@
+@
+integer a;
+@
+a = 5 + 3;
+put(a);
