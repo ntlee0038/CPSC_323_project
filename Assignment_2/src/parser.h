@@ -19,7 +19,7 @@ class Parser {
     private:
         std::ifstream& input;
         std::ostream& output;
-        Token currentl;
+        Token current;
         bool showRules;
         std::string source;
         std:: vector<std::size_t> newlineOffsets;
@@ -41,7 +41,7 @@ class Parser {
 
 
         // Grammaer functions
-        void rat26G();
+        void rat26F();
         void optFunctionDefinitions();
         void functionDefinitions();
         void function();

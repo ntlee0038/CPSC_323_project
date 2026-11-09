@@ -51,10 +51,18 @@ void Parser::rule(const std::string& production) {
 }
 
 [[noreturn]] void Parser::error(const std::string& expected) const {
-    const std::string found = isType("EOF") ? "end of the file" : current.lexeme;
-    const std::string message = "Syntax Eerror at line " +
-    ", found '" + found + "' (token: " + current.token + ")";
-    output << message << '/n';
+    const std::string found = 
+    isType("EOF") ? "end of the file" : current.lexeme;
+
+    
+    const std::string message =
+        "Syntax Error at line " + std::to_string(currentLine) +
+        ", expected " + expected +
+        ", found '" + found +
+        "' (token: " + current.token + ")";
+
+    output << message << '\n';
+
     throw std::runtime_error(message);
 }
 
@@ -66,6 +74,7 @@ void Parser::match(const std::string& value) {
 void Parser::matchType(const std::string& type) {
     if (!isType(type)) error("token type " + type);
     advance();
+}
 
 bool Parser::startsQualifier() const {
     return is("integer") || is("boolean") || is("real");
@@ -88,7 +97,7 @@ void Parser::parse() {
 void Parser::rat26F() {
     rule("<Rat26F -. Function Definitions -> <Function Definitions>'");
     optFunctionDefinitions();
-    match("@")
+    match("@");
     optDeclarationList();
     match("@");
     statementList();
@@ -132,13 +141,13 @@ void Parser::parameter() {
 }
 
 void Parser::qualifier() {
-    if (!startsQualifier() error(" 'integer', 'booolean', or 'real' "));
+    if (!startsQualifier()) error(" 'integer', 'booolean', or 'real' "));
     rule("<Qualifier> -> " + current.lexeme);
     advance();
 }
 
 
-    } else if (is("return")) {
+     else if (is("return")) {
         rule("<Statement> -> <Return>"); returnStatement();
     } else if (is("put")) {
         rule("<Statement> -> <Print>"); printStatement();
@@ -149,7 +158,7 @@ void Parser::qualifier() {
     } else {
         error("a statement");
     }
-}
+
 
 void Parser::compound() {
     rule("<Compound> -> { <Statement List> }");
